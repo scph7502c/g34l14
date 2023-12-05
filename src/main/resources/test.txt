@@ -1,2 +1,2 @@
-John Doe,123456789,123 Main St
-Jane Smith,987654321,456 Oak Ave
+Leon Kennedy,123456789,Raccoon City Police Department
+Arthur Morgan,987654321,Clemens Point
