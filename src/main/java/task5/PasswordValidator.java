@@ -2,7 +2,7 @@ package task5;
 
 public class PasswordValidator {
     public static void main(String[] args) {
-        String password = "TwojeHaslo2021"; // Tutaj wprowadź swoje hasło
+        String password = "TwojeHaslo2021";
         isPasswordValid(password);
     }
 
