@@ -32,10 +32,10 @@ public class UrlValidatorTest {
     @Test
     public void testInvalidUrls() {
         String[] invalidUrls = {
-                "www.invalidurl", // Brak protokołu
-                "https://invalidurl.", // Brak domeny
-                "ftp://invalidurl.com", // Nieobsługiwany protokół
-                "http://invalid url.com" // Spacje w adresie URL
+                "www.invalidurl",
+                "https://invalidurl.",
+                "ftp://invalidurl.com",
+                "http://invalid url.com"
         };
 
         for (String url : invalidUrls) {
