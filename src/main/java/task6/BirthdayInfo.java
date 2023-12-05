@@ -7,13 +7,15 @@ import java.util.Locale;
 
 public class BirthdayInfo {
     public static void main(String[] args) {
-        String birthday = "1990-05-15";
+        displayBirthdayInfo("1990-05-15", new Locale("pl"));
+    }
 
+    public static void displayBirthdayInfo(String birthday, Locale locale) {
         LocalDate birthDate = LocalDate.parse(birthday);
         LocalDate currentDate = LocalDate.now();
 
         int age = calculateAge(birthDate, currentDate);
-        String dayOfWeekString = getDayOfWeekString(birthDate, new Locale("pl"));
+        String dayOfWeekString = getDayOfWeekString(birthDate, locale);
         int weekOfYear = getWeekOfYear(birthDate);
 
         displayInformation(age, dayOfWeekString, weekOfYear);
