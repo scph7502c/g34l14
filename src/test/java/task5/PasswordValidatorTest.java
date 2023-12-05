@@ -15,7 +15,7 @@ public class PasswordValidatorTest {
     @Test
     public void testInvalidPassword() {
         assertFalse(PasswordValidator.isPasswordValid("weakpass"));
-        assertFalse(PasswordValidator.isPasswordValid("2021Insecure"));
+        assertFalse(PasswordValidator.isPasswordValid("2021abcdefgh"));
         assertFalse(PasswordValidator.isPasswordValid("Short1"));
     }
 }
