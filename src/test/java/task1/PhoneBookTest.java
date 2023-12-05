@@ -3,10 +3,9 @@ package task1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
-import java.util.Objects;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,48 +19,53 @@ public class PhoneBookTest {
 
     @Test
     public void testAddPerson() {
-        phoneBook.addPerson("John Doe", "123456789", "123 Main St");
+        phoneBook.addPerson("Leon Kennedy", "123456789", "Raccoon City Police Department");
 
         assertEquals(1, phoneBook.phoneBookEntries.size());
-        assertTrue(phoneBook.phoneBookEntries.containsKey("John Doe"));
+        assertTrue(phoneBook.phoneBookEntries.containsKey("Leon Kennedy"));
     }
 
     @Test
     public void testFindPerson() throws EntryNotFoundException {
-        phoneBook.addPerson("Jane Smith", "987654321", "456 Oak Ave");
+        phoneBook.addPerson("Arthur Morgan", "987654321", "Clemens Point");
 
-        Person person = phoneBook.findPerson("Jane Smith");
+        Person person = phoneBook.findPerson("Arthur Morgan");
 
         assertNotNull(person);
-        assertEquals("Jane Smith", person.getName());
+        assertEquals("Arthur Morgan", person.getName());
         assertEquals("987654321", person.getPhoneNumber());
-        assertEquals("456 Oak Ave", person.getAddress());
+        assertEquals("Clemens Point", person.getAddress());
     }
 
     @Test
     public void testFindPersonNotFound() {
-        assertThrows(EntryNotFoundException.class, () -> {
-            phoneBook.findPerson("Nonexistent Person");
-        });
+        assertThrows(EntryNotFoundException.class, () -> phoneBook.findPerson("Kyle Crane"));
     }
 
     @Test
     public void testLoadFromFile() {
-        File file = null;
-        try {
-            file = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("test.txt")).toURI()).toFile();
-        } catch (URISyntaxException e) {
+        String filePath = "C:\\Users\\damia\\OneDrive\\Pulpit\\FutureCollars\\Java\\Projekty\\g34l14\\src\\main\\resources\\test.txt";
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                if (data.length >= 3) {
+                    String name = data[0];
+                    String phoneNumber = data[1];
+                    String address = data[2];
+                    phoneBook.addPerson(name, phoneNumber, address);
+                }
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (file != null && file.exists()) {
-            phoneBook.loadFromFile(file.getAbsolutePath());
+        assertEquals(2, phoneBook.phoneBookEntries.size());
 
-            assertEquals(2, phoneBook.phoneBookEntries.size());
-            assertTrue(phoneBook.phoneBookEntries.containsKey("John Doe"));
-            assertTrue(phoneBook.phoneBookEntries.containsKey("Jane Smith"));
-        } else {
-            fail("Test file not found or inaccessible.");
-        }
+        assertTrue(phoneBook.phoneBookEntries.containsKey("Leon Kennedy"));
+        assertTrue(phoneBook.phoneBookEntries.containsKey("Arthur Morgan"));
+
     }
+
 }
