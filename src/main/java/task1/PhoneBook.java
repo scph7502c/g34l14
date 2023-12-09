@@ -1,16 +1,35 @@
 package task1;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PhoneBook {
     final Map<String, Person> phoneBookEntries;
+    private String filePath;
 
-    public PhoneBook() {
+    public PhoneBook(String filename) {
         this.phoneBookEntries = new HashMap<>();
+        this.filePath = filename;
+        loadFromFile();
+    }
+
+    public void loadFromFile() {
+        if (filePath == null || filePath.isEmpty()) {
+            System.out.println("File path is not specified.");
+            return;
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    addPerson(parts[0], parts[1], parts[2]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addPerson(String fullName, String phoneNumber, String address) {
@@ -19,6 +38,7 @@ public class PhoneBook {
         }
         Person person = new Person(fullName, phoneNumber, address);
         phoneBookEntries.put(fullName, person);
+        saveToFile();
     }
 
     public Person findPerson(String fullName) throws EntryNotFoundException {
@@ -28,14 +48,18 @@ public class PhoneBook {
         return phoneBookEntries.get(fullName);
     }
 
-    public void loadFromFile(String filename) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
-                    addPerson(parts[0], parts[1], parts[2]);
-                }
+    private void saveToFile() {
+        if (filePath == null || filePath.isEmpty()) {
+            System.out.println("File path is not specified.");
+            return;
+        }
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+            for (Map.Entry<String, Person> entry : phoneBookEntries.entrySet()) {
+                String fullName = entry.getKey();
+                Person person = entry.getValue();
+                String phoneNumber = person.getPhoneNumber();
+                String address = person.getAddress();
+                writer.println(fullName + "," + phoneNumber + "," + address);
             }
         } catch (IOException e) {
             e.printStackTrace();
