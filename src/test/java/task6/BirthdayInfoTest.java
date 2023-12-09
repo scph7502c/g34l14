@@ -1,67 +1,58 @@
 package task6;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.time.format.TextStyle;
-import java.time.temporal.WeekFields;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BirthdayInfoTest {
 
-    @Test
-    public void testCalculateAge() {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate birthDate = LocalDate.of(1990, 5, 15);
+    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private final PrintStream originalOut = System.out;
+    private Locale originalLocale;
+    private BirthdayInfo birthdayInfo;
 
-        int actualAge = BirthdayInfo.calculateAge(birthDate, currentDate);
-        int expectedAge = currentDate.getYear() - birthDate.getYear();
+    @BeforeEach
+    public void setUp() {
+        originalLocale = Locale.getDefault();
 
-        assertEquals(expectedAge, actualAge);
+        birthdayInfo = new BirthdayInfo("1990-05-15", Locale.forLanguageTag("pl"));
+    }
+
+    @AfterEach
+    public void restoreStreams() {
+        System.setOut(originalOut);
+        Locale.setDefault(originalLocale);
     }
 
     @Test
-    public void testGetDayOfWeekString() {
-        LocalDate birthDate = LocalDate.of(1990, 5, 15);
-        Locale polishLocale = new Locale("pl");
+    public void testDisplayInfo() {
+        // Given
+        System.setOut(new PrintStream(outContent));
+        String expectedOutput = "Osoba ma 33 lat.\nUrodziła się w dniu tygodnia: wtorek\nTo był 20 tydzień roku.\n";
 
-        String actualDayOfWeek = BirthdayInfo.getDayOfWeekString(birthDate, polishLocale);
-        String expectedDayOfWeek = birthDate.getDayOfWeek().getDisplayName(TextStyle.FULL, polishLocale);
+        // When
+        birthdayInfo.displayInformation();
 
-        assertEquals(expectedDayOfWeek, actualDayOfWeek);
+        // Then
+        String normalizedExpected = expectedOutput.replaceAll("\\R", "\n");
+        String normalizedActual = outContent.toString().replaceAll("\\R", "\n");
+        assertEquals(normalizedExpected, normalizedActual);
     }
 
     @Test
-    public void testGetWeekOfYear() {
-        LocalDate birthDate = LocalDate.of(1990, 5, 15);
-        int expectedWeekOfYear = birthDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
-        int actualWeekOfYear = BirthdayInfo.getWeekOfYear(birthDate);
+    public void testInvalidDateException() {
+        // Given
+        String invalidDate = "1990-05-45";
 
-        assertEquals(expectedWeekOfYear, actualWeekOfYear);
-    }
-
-    @Test
-    public void testDisplayInformation() {
-        String birthday = "1990-05-15";
-        LocalDate birthDate = LocalDate.parse(birthday);
-        LocalDate currentDate = LocalDate.now();
-
-        int age = BirthdayInfo.calculateAge(birthDate, currentDate);
-        String dayOfWeekString = BirthdayInfo.getDayOfWeekString(birthDate, new Locale("pl"));
-        int weekOfYear = BirthdayInfo.getWeekOfYear(birthDate);
-
-        String expectedOutput = "Osoba ma " + age + " lat.\n" +
-                "Urodziła się w dniu tygodnia: " + dayOfWeekString + "\n" +
-                "To był " + weekOfYear + " tydzień roku.";
-
-        assertEquals(expectedOutput, getDisplayInformationOutput(age, dayOfWeekString, weekOfYear));
-    }
-
-    private String getDisplayInformationOutput(int age, String dayOfWeekString, int weekOfYear) {
-        return "Osoba ma " + age + " lat.\n" +
-                "Urodziła się w dniu tygodnia: " + dayOfWeekString + "\n" +
-                "To był " + weekOfYear + " tydzień roku.";
+        // When, Then
+        assertThrows(DateTimeParseException.class, () -> new BirthdayInfo(invalidDate, Locale.getDefault()));
     }
 }
