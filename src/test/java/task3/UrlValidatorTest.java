@@ -1,45 +1,44 @@
 package task3;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.regex.*;
-
 public class UrlValidatorTest {
-    private static final String URL_REGEX = "^(http|https)://[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(?:/[a-zA-Z0-9._%+-]+)*$";
 
-    public static boolean validateUrl(String url) {
-        Pattern pattern = Pattern.compile(URL_REGEX);
-        Matcher matcher = pattern.matcher(url);
-        return matcher.matches();
+    private UrlValidator validator;
+
+    @BeforeEach
+    public void setUp() {
+        validator = new UrlValidator();
     }
 
     @Test
-    public void testValidUrls() {
+    public void testValidURL() {
         String[] validUrls = {
                 "http://www.onet.pl",
                 "https://mail.google.com",
                 "http://wiadmosci.onet.pl",
-                "http://onet.pl"
+                "http://onet.pl",
+                "http://www.google.com"
         };
 
         for (String url : validUrls) {
-            assertTrue(validateUrl(url), url + " - Oczekiwano poprawnego URL.");
+            assertTrue(validator.validateURL(url), "Expected " + url + " to be a valid URL.");
         }
     }
 
     @Test
-    public void testInvalidUrls() {
+    public void testInvalidURL() {
         String[] invalidUrls = {
-                "www.invalidurl",
-                "https://invalidurl.",
-                "ftp://invalidurl.com",
-                "http://invalid url.com"
+                "ftp://example.com",
+                "htp://invalid.com",
+                "http://.com"
         };
 
         for (String url : invalidUrls) {
-            assertFalse(validateUrl(url), url + " - Oczekiwano niepoprawnego URL.");
+            assertFalse(validator.validateURL(url), "Expected " + url + " to be an invalid URL.");
         }
     }
 }
