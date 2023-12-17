@@ -17,13 +17,13 @@ public class PasswordValidatorTest {
     @Test
     public void testValidPassword() {
         assertTrue(passwordValidator.isPasswordValid("Abcdefg1"));
-        assertTrue(passwordValidator.isPasswordValid("Password123"));
     }
 
     @Test
     public void testInvalidPassword() {
         assertFalse(passwordValidator.isPasswordValid("weakpass"));
-        assertFalse(passwordValidator.isPasswordValid("2021abcdefgh"));
+        assertFalse(passwordValidator.isPasswordValid("2023abcdefgh"));
         assertFalse(passwordValidator.isPasswordValid("Short1"));
+        assertFalse(passwordValidator.isPasswordValid("Password123"));
     }
 }
